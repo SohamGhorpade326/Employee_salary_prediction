@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Insight AI</title>
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #1a202c;
+            --container-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #e2e8f0;
+            --primary-color: #38b2ac;
+            --primary-hover: #319795;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --success-bg: rgba(56, 178, 172, 0.15);
+            --success-text: #38b2ac;
+            --error-bg: rgba(229, 62, 62, 0.15);
+            --error-text: #e53e3e;
+        }
+
+        /* --- General Styling --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20210813/pngtree-dark-dark-color-art-geometric-surface-abstract-black-red-background-image_759136.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- Main Container with Glassmorphism --- */
+        .container {
+            background: var(--container-bg);
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 850px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Header --- */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #a0e9ff, #ffffff);
+            
+            /* The FIX is here: Standard property first, then prefixed one */
+            background-clip: text;
+            -webkit-background-clip: text; /* For Webkit browsers */
+            
+            /* Make text transparent to show gradient */
+            color: transparent;
+        }
+
+        header p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* --- Form Styling --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .form-group .icon {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            color: var(--text-color);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        
+        .form-group input:focus + .icon,
+        .form-group select:focus + .icon {
+            opacity: 1;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 0.8rem 0.8rem 40px; /* Left padding for icon */
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-group select {
+            appearance: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(56, 178, 172, 0.5);
+        }
+        
+        /* Custom select arrow */
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* --- Button Styling --- */
+        .btn-container {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        #predict-btn {
+            background: white;
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #predict-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #predict-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: translateY(0);
+        }
+        
+        .loader {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Result Display --- */
+        #result-container {
+            margin-top: 2.5rem;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: none; /* Initially hidden */
+            animation: slideUp 0.5s ease-out;
+            border-width: 1px;
+            border-style: solid;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #result-container.success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border-color: var(--success-text);
+        }
+
+        #result-container.error {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border-color: var(--error-text);
+        }
+        
+        #confidence {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Income Insight AI</h1>
+            <p>Predict annual income potential with machine learning.</p>
+        </header>
+
+        <form id="prediction-form">
+            <div class="form-grid">
+                <!-- Numerical Inputs -->
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" value="38" required>
+                    <i class="fas fa-user icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="fnlwgt">Final Weight</label>
+                    <input type="number" id="fnlwgt" name="fnlwgt" value="89814" required>
+                    <i class="fas fa-weight-hanging icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="educational-num">Education Level (Numeric)</label>
+                    <input type="number" id="educational-num" name="educational-num" value="9" required>
+                    <i class="fas fa-hashtag icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="capital-gain">Capital Gain</label>
+                    <input type="number" id="capital-gain" name="capital-gain" value="0" required>
+                    <i class="fas fa-arrow-trend-up icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="capital-loss">Capital Loss</label>
+                    <input type="number" id="capital-loss" name="capital-loss" value="0" required>
+                    <i class="fas fa-arrow-trend-down icon"></i>
+                </div>
+                <div class="form-group">
+                    <label for="hours-per-week">Hours per Week</label>
+                    <input type="number" id="hours-per-week" name="hours-per-week" value="50" required>
+                    <i class="fas fa-clock icon"></i>
+                </div>
+
+                <!-- Categorical Inputs -->
+                <div class="form-group">
+                    <label for="workclass">Work Class</label>
+                    <div class="select-wrapper">
+                        <select id="workclass" name="workclass">
+                            <option>Private</option>
+                            <option>Local-gov</option>
+                            <option>Self-emp-not-inc</option>
+                            <option>Federal-gov</option>
+                            <option>State-gov</option>
+                            <option>Self-emp-inc</option>
+                            <option>Without-pay</option>
+                        </select>
+                        <i class="fas fa-briefcase icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="education">Education</label>
+                    <div class="select-wrapper">
+                        <select id="education" name="education">
+                            <option>HS-grad</option>
+                            <option>Some-college</option>
+                            <option>Bachelors</option>
+                            <option>Masters</option>
+                            <option>Assoc-voc</option>
+                            <option>11th</option>
+                            <option>Assoc-acdm</option>
+                            <option>10th</option>
+                            <option>7th-8th</option>
+                            <option>Prof-school</option>
+                            <option>9th</option>
+                            <option>12th</option>
+                            <option>Doctorate</option>
+                            <option>5th-6th</option>
+                            <option>1st-4th</option>
+                            <option>Preschool</option>
+                        </select>
+                        <i class="fas fa-graduation-cap icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="marital-status">Marital Status</label>
+                    <div class="select-wrapper">
+                        <select id="marital-status" name="marital-status">
+                            <option>Married-civ-spouse</option>
+                            <option>Never-married</option>
+                            <option>Divorced</option>
+                            <option>Separated</option>
+                            <option>Widowed</option>
+                            <option>Married-spouse-absent</option>
+                            <option>Married-AF-spouse</option>
+                        </select>
+                        <i class="fas fa-ring icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="occupation">Occupation</label>
+                    <div class="select-wrapper">
+                        <select id="occupation" name="occupation">
+                            <option>Farming-fishing</option>
+                            <option>Prof-specialty</option>
+                            <option>Adm-clerical</option>
+                            <option>Exec-managerial</option>
+                            <option>Craft-repair</option>
+                            <option>Sales</option>
+                            <option>Other-service</option>
+                            <option>Machine-op-inspct</option>
+                            <option>Transport-moving</option>
+                            <option>Handlers-cleaners</option>
+                            <option>Tech-support</option>
+                            <option>Protective-serv</option>
+                            <option>Priv-house-serv</option>
+                            <option>Armed-Forces</option>
+                        </select>
+                        <i class="fas fa-user-tie icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="relationship">Relationship</label>
+                    <div class="select-wrapper">
+                        <select id="relationship" name="relationship">
+                            <option>Husband</option>
+                            <option>Not-in-family</option>
+                            <option>Own-child</option>
+                            <option>Unmarried</option>
+                            <option>Wife</option>
+                            <option>Other-relative</option>
+                        </select>
+                        <i class="fas fa-users icon"></i>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="race">Race</label>
+                    <div class="select-wrapper">
+                        <select id="race" name="race">
+                            <option>White</option>
+                            <option>Black</option>
+                            <option>Asian-Pac-Islander</option>
+                            <option>Amer-Indian-Eskimo</option>
+                            <option>Other</option>
+                        </select>
+                        <i class="fas fa-user-friends icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <div class="select-wrapper">
+                        <select id="gender" name="gender">
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                        <i class="fas fa-venus-mars icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="native-country">Native Country</label>
+                    <div class="select-wrapper">
+                        <select id="native-country" name="native-country">
+                            <option>United-States</option>
+                            <option>Mexico</option>
+                            <option>Philippines</option>
+                            <!-- Add other countries as needed -->
+                        </select>
+                        <i class="fas fa-globe-americas icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" id="predict-btn">
+                    <span class="btn-text">Predict Income</span>
+                </button>
+            </div>
+        </form>
+
+        <div id="result-container">
+            <span id="result-text"></span>
+            <div id="confidence"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('prediction-form');
+        const resultContainer = document.getElementById('result-container');
+        const resultText = document.getElementById('result-text');
+        const confidenceText = document.getElementById('confidence');
+        const predictBtn = document.getElementById('predict-btn');
+        const btnText = document.querySelector('.btn-text');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            predictBtn.disabled = true;
+            btnText.innerHTML = '<span class="loader"></span>Predicting...';
+            resultContainer.style.display = 'none';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Something went wrong');
+                }
+
+                const result = await response.json();
+
+                resultText.textContent = `Prediction: ${result.prediction}`;
+                confidenceText.textContent = `Confidence Score: ${result.confidence_score}`;
+                resultContainer.className = 'success';
+
+            } catch (error) {
+                resultText.textContent = `Error: ${error.message}`;
+                confidenceText.textContent = 'Please check the input values and try again.';
+                resultContainer.className = 'error';
+            } finally {
+                predictBtn.disabled = false;
+                btnText.innerHTML = 'Predict Income';
+                resultContainer.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
